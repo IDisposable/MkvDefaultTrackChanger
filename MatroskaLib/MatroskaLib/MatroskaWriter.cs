@@ -14,7 +14,7 @@ public static class MatroskaWriter
         dataStream.Seek(0, SeekOrigin.Begin);
 
         byte[] bytes = new byte[mkfFile.endPosition];
-        dataStream.Read(bytes, 0, bytes.Length);
+        dataStream.ReadExactly(bytes);
         List<byte> lsBytes = new List<byte>(bytes);
 
         int offset = 0;
@@ -34,6 +34,18 @@ public static class MatroskaWriter
     {
         foreach (Track t in tracks.Where(x => x.type is TrackTypeEnum.audio or TrackTypeEnum.subtitle))
         {
+
+            // Set forced flag to 0 if present
+            //
+            // Ranft65
+            // Change the forced flag before any other changes since its location can be 
+            // changed by the code after this
+            //
+            if (t.flagForcedByteNumber != 0)
+            {
+                lsBytes[offset + t.flagForcedByteNumber] = 0x0;
+            }
+
             byte defaultFlag = (byte)(t.flagDefault ? 0x1 : 0x0);
             if (t.flagDefaultByteNumber != 0)
             {
@@ -50,11 +62,17 @@ public static class MatroskaWriter
             }
 
             // Set forced flag to 0 if present
-            if (t.flagForcedByteNumber != 0)
-            {
-                int correction = t.flagForcedByteNumber < t.flagTypebytenumber ? 3 : 0;
-                lsBytes[offset + t.flagForcedByteNumber - correction] = 0x0;
-            }
+            //
+            // Ranft65
+            // Do not change the forced flag here since this seems to corrupt the files if you do.
+            // It is possible that the order of the flags may vary so the correction used below
+            // may not always be correct.  Note that the offset may already be modified above.
+            //
+            //if (t.flagForcedByteNumber != 0)
+            //{
+            //    int correction = t.flagForcedByteNumber < t.flagTypebytenumber ? 3 : 0;
+            //    lsBytes[offset + t.flagForcedByteNumber - correction] = 0x0;
+            //}
         }
     }
 

@@ -2,7 +2,41 @@
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 # MkvDefaultTrackChanger
 Small GUI application to change the default subtitle and audio tracks in
-MKV video files. It can handle multiple files and runs on Windows, Linux and Mac OS. It's also really fast because it only changes the metadata of the MKV file and doesn't involve any remuxing. 
+MKV video files. It can handle multiple files and runs on Windows, Linux and Mac OS. It's also really fast because it only changes the metadata of the MKV file and doesn't involve any remuxing.  It can also be used via the command line.  Command line usage is as follows:
+
+MkvDefaultTrackChanger  DefaultAudioTrack  DefaultSubtitleTrack  <Options>  File(s)
+
+Where
+
+DefaultAudioTrack is the desired default audio track. 
+The first audio track is track number one.
+Use -1 or 0 to not modify the default audio track.
+
+DefaultSubtitleTrack is the desired default subtitle track.
+The first subtitle track is track number one.
+Use -1 to not modifiy the default subtitle track.
+Use zero for no default subtitle track.
+
+The following options are optional and disable track sameness checking when multiple files are processed:
+-disable-all-track-sameness-checks
+-disable-audio-language-check
+-disable-audio-name-check
+-disable-subtitle-language-check
+-disable-subtitle-name-check
+
+File(s) is the list of files to modify.
+
+Command Line Example:
+
+MkvDefaultTrackChanger 2 1 file1.mkv file2.mkv file3.mkv
+
+MkvDefaultTrackChanger -h or MkvDefaultTrackChanger -H will display this help.
+
+The selected audio and subtitle tracks of the files must be the same.
+Files with different tracks than the first file will not be processed unless checks are disabled.
+
+Please note that files are overwritten.
+Only use this program on copies of the original files if you want to keep the original unmodifed files.
 
 ## What is MKV and what problem does this program solve?
 MKV is a multimedia container format and can store multiple
